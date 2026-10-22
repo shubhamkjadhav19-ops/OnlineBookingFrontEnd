@@ -1,0 +1,30 @@
+<div class="dashboard">
+  <aside class="sidebar">
+    <p class="eyebrow side-label">YOUR MARKET</p>
+    <button class="side-link" [class.selected]="supplierView === 'inventory'" (click)="switchView('inventory')"><span>▦</span> Your listings</button>
+    <button class="side-link" [class.selected]="supplierView === 'orders'" (click)="switchView('orders')"><span>↗</span> Incoming orders</button>
+    <div class="sidebar-bottom"><div class="side-note"><span class="note-dot"></span><strong>Local by default</strong><p>Every order keeps business in your neighborhood.</p></div><span class="side-coordinates">NEAR MARKET&nbsp; / &nbsp;{{ account.role }}</span></div>
+  </aside>
+  <section class="workspace">
+    @if (notice) { <p class="message success-message" role="status">{{ notice }}</p> }
+    @if (error) { <p class="message error-message" role="alert">{{ error }}</p> }
+    @if (supplierView === 'inventory') {
+      <div class="page-heading heading-row"><div><p class="eyebrow">YOUR LITTLE CORNER OF THE MARKET</p><h1>Make room for <em>good.</em></h1><p class="muted">Keep your local listings fresh and ready to find.</p></div><span class="heading-number">01 <i>/ 02</i></span></div>
+      <section class="supplier-layout"><form class="product-editor" (ngSubmit)="saveProduct()" #productForm="ngForm"><p class="eyebrow">{{ editingProductId ? 'UPDATE YOUR LISTING' : 'ADD A LISTING' }}</p><h2>{{ editingProductId ? 'A little refresh.' : 'What are you sharing?' }}</h2>
+        <label>Product name<input name="productName" [(ngModel)]="productDraft.name" required maxlength="140" placeholder="Heirloom tomatoes"></label>
+        <label>Description<textarea name="description" [(ngModel)]="productDraft.description" rows="3" maxlength="1000" placeholder="A few words about what makes it special"></textarea></label>
+        <div class="two-fields"><label>Category<input name="category" [(ngModel)]="productDraft.category" maxlength="80" placeholder="Produce"></label><label>Price<input name="price" type="number" min="0.01" step="0.01" [(ngModel)]="productDraft.price" required></label></div>
+        <label>Available quantity<input name="inventory" type="number" min="0" step="1" [(ngModel)]="productDraft.inventory" required></label>
+        <div class="editor-actions"><button class="button button-primary" type="submit" [disabled]="productForm.invalid || busy">{{ editingProductId ? 'Save changes' : 'Publish listing' }} <span>↗</span></button>@if (editingProductId) { <button class="button button-quiet" type="button" (click)="cancelProductEdit()">Cancel</button> }</div>
+      </form><div class="listing-panel"><div class="listing-heading"><div><p class="eyebrow">OUT IN THE NEIGHBORHOOD</p><h2>Your listings <span>{{ products.length.toString().padStart(2, '0') }}</span></h2></div><span class="fresh-dot"></span></div>
+        @if (products.length) { <div class="listing-list">@for (product of products; track product.id) { <article class="listing-row"><div class="listing-sigil">✳</div><div class="listing-name"><strong>{{ product.name }}</strong><span>{{ product.category || 'Uncategorized' }} · {{ product.inventory }} available</span></div><strong class="listing-price">{{ product.price | currency }}</strong><button class="icon-button" type="button" (click)="editProduct(product)" [attr.aria-label]="'Edit ' + product.name" title="Edit listing">✎</button><button class="icon-button danger-icon" type="button" (click)="deleteProduct(product)" [attr.aria-label]="'Remove ' + product.name" title="Remove listing">×</button></article> }</div> }
+        @else { <div class="listing-empty">Your first listing is waiting to meet its neighbors.</div> }
+      </div></section>
+    }
+    @if (supplierView === 'orders') {
+      <div class="page-heading heading-row"><div><p class="eyebrow">FROM YOUR NEIGHBORS</p><h1>Incoming <em>orders.</em></h1><p class="muted">Accept or reject new orders. Pending orders need your attention.</p></div><span class="heading-number">02 <i>/ 02</i></span></div>
+      @if (orders.length) { <div class="supplier-order-list">@for (order of orders; track order.id) { <article class="supplier-order"><div class="supplier-order-head"><div><p class="eyebrow">ORDER #{{ order.id }} · {{ order.createdAt | date:'MMM d, y' }}</p><h2>{{ order.customerName }}</h2></div><span class="status-pill" [class]="'status-pill status-' + order.status.toLowerCase()">{{ order.status }}</span></div><div class="supplier-order-lines">@for (line of order.items; track line.productId) { <div><span>{{ line.quantity }} × {{ line.productName }}</span><strong>{{ line.subtotal | currency }}</strong></div> }</div><div class="supplier-order-bottom"><span>{{ order.items.length }} line items</span><strong>{{ order.total | currency }}</strong>@if (order.status === 'PENDING') { <div class="decision-actions"><button class="button button-outline" type="button" (click)="decide(order, 'REJECT')" [disabled]="busy">Reject</button><button class="button button-dark" type="button" (click)="decide(order, 'ACCEPT')" [disabled]="busy">Accept order <span>↗</span></button></div> }</div></article> }</div> }
+      @else { <div class="empty-state"><span class="empty-mark">↗</span><h2>It's quiet on the order front.</h2><p>New customer orders will appear here.</p></div> }
+    }
+  </section>
+</div>

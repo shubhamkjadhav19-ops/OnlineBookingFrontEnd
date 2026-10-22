@@ -1,0 +1,18 @@
+<main class="app-shell">
+  @if (!account) {
+    <nm-auth-page (authenticated)="authenticate($event)" />
+  } @else {
+    <header class="topbar">
+      <a class="wordmark" href="/" aria-label="Near Market home"><span class="brand-mark">n</span>near market</a>
+      <div class="topbar-right">
+        <div class="account-chip"><span class="avatar">{{ account.name.slice(0, 1).toUpperCase() }}</span><span><strong>{{ account.name }}</strong><small>{{ account.role === 'CUSTOMER' ? 'Customer' : 'Local supplier' }}</small></span></div>
+        <button class="icon-button signout" type="button" (click)="logout()" aria-label="Sign out" title="Sign out">↗</button>
+      </div>
+    </header>
+    @if (account.role === 'CUSTOMER') {
+      <nm-customer-dashboard [account]="account" />
+    } @else {
+      <nm-supplier-dashboard [account]="account" />
+    }
+  }
+</main>

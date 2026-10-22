@@ -1,0 +1,51 @@
+<section class="auth-layout">
+  <div class="auth-story">
+    <a class="wordmark" href="/" aria-label="Near Market home"><span class="brand-mark">n</span>near market</a>
+    <div class="story-copy">
+      <p class="eyebrow">GOOD THINGS, GROWN CLOSE</p>
+      <h1>Your neighborhood<br><em>has good taste.</em></h1>
+      <p class="story-intro">Meet the makers, growers, and small shops just around the corner.</p>
+      <div class="story-stamp"><span>01</span><div><strong>LOCAL FINDS</strong><small>Fresh from nearby suppliers</small></div><span class="stamp-arrow">↗</span></div>
+    </div>
+    <div class="story-footer"><span>INDEPENDENT, BY NATURE</span><span>EST. FOR THE NEIGHBORHOOD</span></div>
+    <div class="sun-shape" aria-hidden="true"></div>
+  </div>
+  <section class="auth-panel">
+    <div class="auth-box">
+      <p class="eyebrow">{{ authMode === 'login' ? 'YOUR LOCAL MARKET' : 'COME ON IN' }}</p>
+      <h2>{{ authMode === 'login' ? 'Welcome back.' : 'Make it local.' }}</h2>
+      <p class="muted">{{ authMode === 'login' ? 'Sign in to pick up where you left off.' : 'Create an account to shop or sell nearby.' }}</p>
+      <div class="auth-toggle" role="tablist" aria-label="Account access">
+        <button type="button" [class.active]="authMode === 'login'" (click)="authMode = 'login'; clearError()">Sign in</button>
+        <button type="button" [class.active]="authMode === 'register'" (click)="authMode = 'register'; clearError()">Create account</button>
+      </div>
+      <form (ngSubmit)="submitAuth()" #authFormRef="ngForm">
+        @if (authMode === 'register') {
+          <label>Your name<input name="name" [(ngModel)]="authForm.name" autocomplete="name" required maxlength="120" placeholder="Jamie Rivera"></label>
+        }
+        <label>Email address<input name="email" type="email" [(ngModel)]="authForm.email" autocomplete="email" required placeholder="you@example.com"></label>
+        <label>Password<input name="password" type="password" [(ngModel)]="authForm.password" [attr.minlength]="authMode === 'register' ? 8 : null" autocomplete="current-password" required placeholder="At least 8 characters"></label>
+        @if (authMode === 'register') {
+          <label>I'm here as
+            <select name="role" [(ngModel)]="authForm.role">
+              <option value="CUSTOMER">A customer</option>
+              <option value="SUPPLIER">A local supplier</option>
+            </select>
+          </label>
+        }
+        <p class="location-form-label">{{ authMode === 'login' ? 'Update your saved location after sign-in' : 'Add your location (optional)' }}</p>
+        <div class="coordinate-fields">
+          <label>Latitude<input name="latitude" type="number" step="any" [(ngModel)]="authForm.latitude" placeholder="40.71"></label>
+          <label>Longitude<input name="longitude" type="number" step="any" [(ngModel)]="authForm.longitude" placeholder="-74.00"></label>
+        </div>
+        <button class="button button-outline auth-location-button" type="button" (click)="useCurrentLocation()" [disabled]="busy"><span>⌖</span> Use current location</button>
+        @if (error) { <p class="message error-message" role="alert">{{ error }}</p> }
+        <button class="button button-primary auth-submit" type="submit" [disabled]="authFormRef.invalid || busy">
+          {{ busy ? 'One moment…' : authMode === 'login' ? 'Sign in to Near Market' : 'Create your account' }} <span>↗</span>
+        </button>
+      </form>
+      <p class="auth-footnote">Your account is protected with encrypted password storage.</p>
+    </div>
+    <span class="corner-note">A SMALLER MILE<br>MAKES A BIG DIFFERENCE</span>
+  </section>
+</section>
